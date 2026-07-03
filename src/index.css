@@ -89,9 +89,7 @@ h2.display { font-size: clamp(26px, 3vw, 36px); }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #f5f7fa; }
 .brand-tile {
   width: 34px; height: 34px; border-radius: 8px;
-  background: var(--yellow); color: var(--navy);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 900; font-size: 21px;
+  display: block; object-fit: contain;
 }
 .brand-name { font-weight: 800; font-size: 21px; letter-spacing: -0.02em; }
 .nav-links { display: flex; align-items: center; gap: 26px; margin-left: auto; flex-wrap: wrap; }

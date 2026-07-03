@@ -91,7 +91,7 @@ export function Footer() {
     <footer className="footer">
       <div className="footer-inner container">
         <span className="brand">
-          <span className="brand-tile">T</span>
+          <img className="brand-tile" src="/logo.svg" alt="tanstrack logo" width="22" height="22" />
           <span className="brand-name">tanstrack</span>
         </span>
         <span className="footer-copy">© Tanstrack {CONFIG.year} · {CONFIG.city}</span>

@@ -7,7 +7,7 @@ export default function Nav() {
   return (
     <nav className="nav container" aria-label="Main">
       <a href="#top" className="brand" onClick={close}>
-        <span className="brand-tile">T</span>
+        <img className="brand-tile" src="/logo.svg" alt="tanstrack logo" width="34" height="34" />
         <span className="brand-name">tanstrack</span>
       </a>
 
