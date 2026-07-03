@@ -85,7 +85,7 @@ h2.display { font-size: clamp(26px, 3vw, 36px); }
 .btn-navy:hover { background: #1a2a42; }
 
 /* ── Nav ────────────────────────────────────────────────────── */
-.nav { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; padding-block: 22px; }
+.nav { position: relative; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; padding-block: 22px; }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #f5f7fa; }
 .brand-tile {
   width: 34px; height: 34px; border-radius: 8px;
@@ -101,6 +101,41 @@ h2.display { font-size: clamp(26px, 3vw, 36px); }
 .nav-links a.nav-login:hover { border-color: rgba(245, 247, 250, 0.5); background: rgba(245, 247, 250, 0.06); }
 .nav-links a.nav-cta { background: var(--yellow); color: var(--navy); font-weight: 700; padding: 10px 18px; border-radius: 8px; }
 .nav-links a.nav-cta:hover { background: var(--yellow-hover); }
+
+/* Hamburger toggle — hidden on desktop, shown on mobile */
+.nav-toggle {
+  display: none; margin-left: auto;
+  width: 42px; height: 42px; padding: 0;
+  background: transparent; border: 1px solid rgba(245, 247, 250, 0.2);
+  border-radius: 8px; cursor: pointer;
+  align-items: center; justify-content: center;
+}
+.nav-toggle-bars, .nav-toggle-bars::before, .nav-toggle-bars::after {
+  content: ''; display: block; width: 20px; height: 2px;
+  background: #f5f7fa; border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+.nav-toggle-bars { position: relative; }
+.nav-toggle-bars::before { position: absolute; top: -6px; }
+.nav-toggle-bars::after { position: absolute; top: 6px; }
+.nav-toggle-bars.open { background: transparent; }
+.nav-toggle-bars.open::before { top: 0; transform: rotate(45deg); }
+.nav-toggle-bars.open::after { top: 0; transform: rotate(-45deg); }
+
+@media (max-width: 760px) {
+  .nav { flex-wrap: nowrap; gap: 16px; }
+  .nav-toggle { display: flex; }
+  .nav-links {
+    display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 40;
+    flex-direction: column; align-items: stretch; gap: 4px;
+    margin: 0; padding: 12px 20px 20px;
+    background: var(--navy); border-top: 1px solid rgba(245, 247, 250, 0.08);
+    box-shadow: 0 24px 40px rgba(0, 0, 0, 0.35);
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a { padding: 12px 4px; font-size: 16px; border-radius: 8px; }
+  .nav-links a.nav-login, .nav-links a.nav-cta { text-align: center; padding: 12px 18px; margin-top: 4px; }
+}
 
 /* ── Hero ───────────────────────────────────────────────────── */
 .hero {
