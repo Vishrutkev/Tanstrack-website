@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+---
+
+<Base title="Lane not found — TansTrack" noindex>
+  <Nav />
+  <main id="main" class="container wrap">
+    <p class="chip"><b>404</b><span class="chip-sep" aria-hidden="true">·</span><span>LANE NOT FOUND</span></p>
+    <h1>This lane isn’t on the map.</h1>
+    <p class="lede">The page you’re after doesn’t exist — or it moved.</p>
+    <p><a class="btn btn-amber" href="/">Back to the hub</a></p>
+  </main>
+
+  <style>
+    .wrap {
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 20px;
+      padding-block: 64px;
+    }
+    h1 {
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 1.05;
+    }
+  </style>
+</Base>

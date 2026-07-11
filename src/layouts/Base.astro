@@ -1,0 +1,121 @@
+---
+import '../styles/tokens.css';
+import { SITE } from '../copy';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+const { title = SITE.title, description = SITE.description, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      name: SITE.name,
+      url: SITE.url,
+      logo: `${SITE.url}/icon-512.png`,
+      email: SITE.email,
+      sameAs: [SITE.linkedin],
+      address: { '@type': 'PostalAddress', addressLocality: 'Toronto', addressCountry: 'CA' },
+    },
+    {
+      '@type': 'SoftwareApplication',
+      name: SITE.name,
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      url: SITE.url,
+      description: SITE.description,
+    },
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#0b101c" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={SITE.ogTitle} />
+    <meta property="og:description" content={SITE.ogDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={`${SITE.url}/og.png`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={SITE.ogTitle} />
+    <meta name="twitter:description" content={SITE.ogDescription} />
+    <meta name="twitter:image" content={`${SITE.url}/og.png`} />
+
+    <link rel="preload" href="/fonts/overpass-800-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/martian-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+
+    <script>
+      // Scroll motion: IO-driven reveals + spine checkpoint fills.
+      // Content is never motion-gated: CSS hides .reveal only when
+      // motion is allowed, and a safety timer force-shows everything.
+      const motionOk = matchMedia('(prefers-reduced-motion: no-preference)').matches;
+      const reveals = Array.from(document.querySelectorAll('.reveal'));
+      const stops = Array.from(document.querySelectorAll('.stop'));
+
+      if (motionOk && 'IntersectionObserver' in window) {
+        const show = (el: Element) => el.classList.add('in');
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                show(e.target);
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { threshold: 0.12 }
+        );
+        reveals.forEach((el) => {
+          if (el.getBoundingClientRect().top < innerHeight) show(el);
+          else io.observe(el);
+        });
+        setTimeout(() => {
+          reveals.forEach(show);
+          io.disconnect();
+        }, 2500);
+
+        const spine = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('passed');
+                spine.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -55% 0px' }
+        );
+        stops.forEach((s) => spine.observe(s));
+      } else {
+        reveals.forEach((el) => el.classList.add('in'));
+        stops.forEach((s) => s.classList.add('passed'));
+      }
+    </script>
+  </body>
+</html>

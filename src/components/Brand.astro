@@ -1,0 +1,44 @@
+---
+import { SITE } from '../copy';
+interface Props {
+  href?: string;
+  size?: number;
+}
+const { href = '/', size = 32 } = Astro.props;
+---
+
+<a class="brand" href={href} aria-label={`${SITE.name} — home`}>
+  <svg
+    class="brand-tile"
+    width={size}
+    height={size}
+    viewBox="0 0 512 512"
+    aria-hidden="true"
+  >
+    <rect width="512" height="512" rx="116" fill="#1b5bf9"></rect>
+    <rect x="140" y="139.5" width="232" height="70" fill="#ffffff"></rect>
+    <rect x="221" y="209.5" width="70" height="163" fill="#ffffff"></rect>
+  </svg>
+  <span class="brand-name">{SITE.wordmark}</span>
+</a>
+
+<style>
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+  }
+  .brand-tile {
+    display: block;
+    border-radius: 7px;
+  }
+  .brand-name {
+    font-family: 'Wordmark', var(--f-body);
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: -0.015em;
+    transform: translateY(-1px);
+  }
+</style>

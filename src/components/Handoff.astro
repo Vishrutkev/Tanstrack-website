@@ -1,0 +1,136 @@
+---
+import Chip from './Chip.astro';
+import { HANDOFF, LOAD } from '../copy';
+---
+
+<section id={HANDOFF.id} class="stop handoff" aria-labelledby="handoff-h">
+  <div class="container">
+    <div class="stop-head reveal">
+      <span class="stop-node" aria-hidden="true"></span>
+      <Chip parts={LOAD.chips.delivered} />
+    </div>
+    <h2 id="handoff-h" class="reveal">{HANDOFF.h2}</h2>
+    <p class="lede reveal">{HANDOFF.lede}</p>
+
+    <div class="split">
+      <div class="side road reveal">
+        <p class="side-label">{HANDOFF.road.label}</p>
+        <h3>{HANDOFF.road.title}</h3>
+        <ul>
+          {HANDOFF.road.items.map((it) => <li>{it}</li>)}
+        </ul>
+      </div>
+      <div class="side office reveal" style="--reveal-delay: 120ms">
+        <p class="side-label">{HANDOFF.office.label}</p>
+        <h3>{HANDOFF.office.title}</h3>
+        <ul>
+          {HANDOFF.office.items.map((it) => <li>{it}</li>)}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- the seam: paper begins here and never ends -->
+  <div class="owner">
+    <div class="container">
+      <p class="side-label">{HANDOFF.owner.label}</p>
+      <p class="owner-body">{HANDOFF.owner.body}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .handoff {
+    padding-top: clamp(64px, 9vh, 104px);
+    padding-bottom: 0;
+  }
+  .handoff .container {
+    position: relative;
+  }
+  .split {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 22px;
+    margin-top: 40px;
+  }
+  .side {
+    border-radius: var(--r-3);
+    padding: 30px 32px 34px;
+  }
+  .side.road {
+    background: var(--panel);
+    border: 1px solid var(--line-dark);
+  }
+  .side.office {
+    background: var(--manifest);
+    color: var(--ink);
+  }
+  .side-label {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    font-stretch: 87.5%;
+    letter-spacing: 0.1em;
+    color: var(--muted-dark);
+    margin-bottom: 18px;
+  }
+  .side.office .side-label {
+    color: var(--muted-ink);
+  }
+  .side h3 {
+    font-family: var(--f-display);
+    font-weight: 800;
+    font-size: 23px;
+    letter-spacing: -0.01em;
+    margin-bottom: 14px;
+  }
+  .side ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .side li {
+    position: relative;
+    padding-left: 22px;
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--muted-dark);
+    text-wrap: pretty;
+  }
+  .side.office li {
+    color: var(--muted-ink);
+  }
+  .side li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 10px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--signal-tint);
+  }
+  .side.office li::before {
+    background: var(--signal-deep);
+  }
+
+  .owner {
+    margin-top: clamp(48px, 7vh, 72px);
+    background: var(--manifest);
+    color: var(--ink);
+    padding-block: 40px 44px;
+  }
+  .owner .side-label {
+    color: var(--muted-ink);
+    margin-bottom: 10px;
+  }
+  .owner-body {
+    max-width: 74ch;
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--ink);
+    text-wrap: pretty;
+  }
+</style>

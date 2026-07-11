@@ -1,0 +1,66 @@
+---
+import Brand from './Brand.astro';
+import { FOOTER, NAV, SITE } from '../copy';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container inner">
+    <div class="col brand-col">
+      <Brand size={24} />
+      <p class="line">{FOOTER.line}</p>
+    </div>
+    <nav class="col links" aria-label="Footer">
+      {FOOTER.links.map((l) => <a href={l.href}>{l.label}</a>)}
+      <a href={NAV.login.href}>{NAV.login.label}</a>
+    </nav>
+    <div class="col meta">
+      <a href={SITE.linkedin} rel="me noopener" target="_blank">LinkedIn</a>
+      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      <span>© {SITE.name} {year} · {SITE.city}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--asphalt);
+    color: var(--headlight);
+  }
+  .inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 28px;
+    padding-block: 40px 48px;
+    align-items: start;
+  }
+  .brand-col .line {
+    margin-top: 12px;
+    font-size: 13.5px;
+    color: var(--muted-dark);
+  }
+  .links,
+  .meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+  }
+  .links a,
+  .meta a {
+    color: var(--muted-dark);
+    text-decoration: none;
+    width: fit-content;
+  }
+  .links a:hover,
+  .meta a:hover {
+    color: var(--headlight);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .meta span {
+    color: var(--muted-dark);
+    font-size: 13px;
+    margin-top: 6px;
+  }
+</style>

@@ -1,0 +1,164 @@
+---
+import Chip from './Chip.astro';
+import { TRUST, LOAD } from '../copy';
+---
+
+<section id={TRUST.id} class="stop container" aria-labelledby="trust-h">
+  <div class="stop-head reveal">
+    <span class="stop-node" aria-hidden="true"></span>
+    <Chip parts={LOAD.chips.invoiced} />
+  </div>
+  <h2 id="trust-h" class="reveal">{TRUST.h2}</h2>
+  <p class="lede reveal">{TRUST.lede}</p>
+
+  <!-- the ledger writes itself in — once, on scroll -->
+  <div class="ledger" role="table" aria-label="Example audit ledger for load LD-2481">
+    {
+      TRUST.ledger.map((r, i) => (
+        <div class="row reveal" role="row" style={`--reveal-delay: ${i * 80}ms`}>
+          <span class="t" role="cell">{r.t}</span>
+          <span class="f" role="cell">{r.field}</span>
+          <span class="c" role="cell">{r.change}</span>
+          <span class="w" role="cell">{r.who}</span>
+          <span class="r" role="cell">{r.ref}</span>
+        </div>
+      ))
+    }
+    <p class="ledger-note">Example entries — field-level diffs, actor, and FX stamp, exactly as recorded.</p>
+  </div>
+
+  <div class="points">
+    {
+      TRUST.points.map((p, i) => (
+        <div class="point reveal" style={`--reveal-delay: ${i * 70}ms`}>
+          <h3>{p.title}</h3>
+          <p>{p.body}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  <p class="bar reveal" aria-label="Security and isolation">
+    {TRUST.bar.map((b) => <span>{b}</span>)}
+  </p>
+</section>
+
+<style>
+  .stop {
+    padding-block: clamp(72px, 10vh, 112px) clamp(64px, 9vh, 96px);
+  }
+
+  .ledger {
+    margin-top: 44px;
+    border-top: 2px solid var(--ink);
+    font-family: var(--f-mono);
+    font-stretch: 87.5%;
+    font-size: 12.5px;
+    letter-spacing: 0.01em;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 118px 168px minmax(0, 1fr) 158px 64px;
+    gap: 18px;
+    padding: 13px 2px;
+    border-bottom: 1px solid var(--line-ink);
+    align-items: baseline;
+  }
+  .t {
+    color: var(--muted-ink);
+  }
+  .f {
+    font-weight: 600;
+  }
+  .c {
+    color: var(--amber-deep);
+    overflow-wrap: anywhere;
+  }
+  .w {
+    color: var(--muted-ink);
+  }
+  .r {
+    color: var(--muted-ink);
+    text-align: right;
+  }
+  .ledger-note {
+    margin-top: 12px;
+    font-family: var(--f-body);
+    font-size: 13px;
+    color: var(--muted-ink);
+  }
+  @media (max-width: 860px) {
+    .row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 4px 16px;
+    }
+    .t,
+    .w {
+      font-size: 11px;
+    }
+    .t {
+      order: 1;
+    }
+    .r {
+      order: 2;
+    }
+    .f {
+      order: 3;
+      grid-column: 1 / -1;
+    }
+    .c {
+      order: 4;
+      grid-column: 1 / -1;
+    }
+    .w {
+      order: 5;
+      grid-column: 1 / -1;
+    }
+  }
+
+  .points {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: 30px 40px;
+    margin-top: 52px;
+  }
+  .point h3 {
+    font-family: var(--f-body);
+    font-weight: 600;
+    font-size: 17.5px;
+    margin-bottom: 8px;
+  }
+  .point p {
+    font-size: 15.5px;
+    line-height: 1.62;
+    color: var(--muted-ink);
+    text-wrap: pretty;
+  }
+
+  .bar {
+    display: flex;
+    gap: 10px 36px;
+    flex-wrap: wrap;
+    margin-top: 52px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line-ink);
+    font-family: var(--f-mono);
+    font-stretch: 87.5%;
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    color: var(--muted-ink);
+  }
+  .bar span {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .bar span::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+    background: var(--signal-deep);
+    opacity: 0.75;
+  }
+</style>

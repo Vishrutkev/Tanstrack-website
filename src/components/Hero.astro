@@ -1,0 +1,96 @@
+---
+import Chip from './Chip.astro';
+import LaneMap from './LaneMap.astro';
+import { HERO, LOAD } from '../copy';
+---
+
+<header class="hero container">
+  <div class="hero-copy">
+    <Chip parts={LOAD.chips.dispatched} class="hero-chip" />
+    <h1>{HERO.h1}</h1>
+    <p class="hero-sub">{HERO.sub}</p>
+    <div class="hero-ctas">
+      <a href={HERO.ctaPrimary.href} class="btn btn-amber">{HERO.ctaPrimary.label}</a>
+      <a href={HERO.ctaSecondary.href} class="btn btn-ghost">{HERO.ctaSecondary.label}</a>
+    </div>
+  </div>
+  <div class="hero-map">
+    <LaneMap />
+  </div>
+</header>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
+    gap: clamp(32px, 5vw, 64px);
+    align-items: center;
+    padding-block: clamp(40px, 7vh, 88px) clamp(48px, 8vh, 104px);
+  }
+  h1 {
+    font-size: clamp(46px, 6.4vw, 78px);
+    line-height: 1.02;
+    margin-top: 22px;
+  }
+  .hero-sub {
+    margin-top: 20px;
+    font-size: 18px;
+    line-height: 1.62;
+    color: var(--muted-dark);
+    max-width: 54ch;
+    text-wrap: pretty;
+  }
+  .hero-ctas {
+    display: flex;
+    gap: 14px;
+    margin-top: 34px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-columns: 1fr;
+      padding-block: 28px 56px;
+    }
+    .hero-map {
+      max-width: 560px;
+    }
+  }
+  @media (max-width: 480px) {
+    .hero-ctas {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .hero-ctas .btn {
+      text-align: center;
+    }
+  }
+
+  /* the one orchestrated moment: chip stamps, thesis rises, map draws */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-copy > :global(*) {
+      opacity: 0;
+      transform: translateY(18px);
+      animation: rise var(--t-section) var(--ease-arrive) forwards;
+    }
+    .hero-copy > :global(.hero-chip) {
+      animation-delay: 0ms;
+      animation-duration: var(--t-reveal);
+    }
+    .hero-copy > h1 {
+      animation-delay: 90ms;
+    }
+    .hero-copy > .hero-sub {
+      animation-delay: 190ms;
+    }
+    .hero-copy > .hero-ctas {
+      animation-delay: 280ms;
+    }
+    @keyframes rise {
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  }
+</style>

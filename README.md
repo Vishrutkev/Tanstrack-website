@@ -1,56 +1,70 @@
-# Tanstrack — Marketing Website
+# TansTrack — marketing site
 
-Single-page marketing site for Tanstrack (TMS for freight brokerages, dispatch
-operations, and carriers). Built with React + Vite, no other dependencies.
+Static one-pager for [tanstrack.com](https://tanstrack.com), built with Astro.
+No framework runtime ships to the browser — the whole page is ~12KB gzipped
+(HTML + CSS + JS) plus four small font subsets.
 
 ## Run locally
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173
+npm run dev        # http://localhost:4321
+npm run build      # outputs dist/
+npm run preview    # serve dist/
 ```
 
-## Deploy on Vercel (auto-deploy on every commit)
+## Deploy
 
-1. Push this folder to a GitHub repo:
-   ```bash
-   git init
-   git add .
-   git commit -m "Tanstrack website"
-   git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/tanstrack-website.git
-   git push -u origin main
-   ```
-2. Go to [vercel.com](https://vercel.com) → **Add New → Project** → import the repo.
-3. Vercel auto-detects Vite. Click **Deploy** — done.
-4. From now on, every `git push` to `main` redeploys automatically.
-5. To use your domain: Vercel project → **Settings → Domains** → add
-   `tanstrack.com` and follow the DNS instructions.
-
-## Wire up the demo form (email to hello@tanstrack.com)
-
-1. Go to [web3forms.com](https://web3forms.com), enter `hello@tanstrack.com`,
-   and copy the access key they email you.
-2. Paste it into `src/config.js` → `web3formsKey`.
-3. Commit and push. Submissions now arrive in your inbox (free tier ≈ 250/month).
-
-Until the key is set, the form falls back to opening the visitor's mail client.
+Vercel, auto-deploy on push to `main` (framework preset: Astro).
+Set `PUBLIC_WEB3FORMS_KEY` in Vercel → Settings → Environment Variables
+(same value as local `.env`). Without it the demo form falls back to opening
+the visitor's mail client.
 
 ## Where to edit things
 
 | What | Where |
 |---|---|
-| Email, LinkedIn, domain, form key | `src/config.js` |
-| Colors, fonts, spacing | `src/index.css` (CSS variables at the top) |
-| Hero copy + product mockup | `src/components/Hero.jsx` |
-| Feature cards, steps | `src/components/Sections.jsx` |
-| Broker/carrier columns, security | `src/components/Audience.jsx` |
-| Pricing, CTA banner | `src/components/Pricing.jsx` |
-| Demo form, footer | `src/components/Contact.jsx` |
-| SEO / meta tags | `index.html` |
+| **All copy** (headlines, claims, ledger rows, form labels) | `src/copy.ts` |
+| Colors, spacing, motion tokens, shared styles | `src/styles/tokens.css` |
+| The lane-map hero graphic | `src/components/LaneMap.astro` |
+| Section layouts | `src/components/*.astro` |
+| SEO meta, JSON-LD, favicons | `src/layouts/Base.astro` |
+| OG share image | `public/og.png` (1200×630) |
 
-## Placeholders still to fill
+## The one rule for copy
 
-- `[COMPANY_LINKEDIN_URL]` in `src/config.js`
-- `web3formsKey` in `src/config.js`
-- `[TESTIMONIAL]` — commented slot in `src/App.jsx`
+**Every capability claim must be true in the TMS codebase.** The current copy
+is verified against the app (Excel import, bulk edit ≤200 all-or-nothing,
+undo toast, AR/AP, same-transaction append-only audit, Bank of Canada FX
+stamping, per-load P&L, tenant isolation, RBAC, AWS ca-central-1).
+Known **not** to exist as of 2026-07: PDF rate-con import, real-time sync,
+emailed tenders, per-load document storage — don't claim them until built.
+
+## Screenshots
+
+Product figures are marked slots (`SCREENSHOT SLOT · …`) until real captures
+exist. To fill one: capture from the app with **seeded fictional data**
+(never real client names), save under `src/assets/`, and pass
+`src`/`width`/`height` to the `<Plate>` in `src/components/Transit.astro`.
+Slots are 16:10.
+
+## Design system (short version)
+
+Two worlds, one seam: **asphalt** (night, operations) above, **manifest
+paper** (money) below — the page crosses at "Delivered", because delivery is
+where dispatch hands off to accounting. Blue `#1b5bf9` = movement and
+interaction. Amber `#ffb020` = money, nothing else. Type: Overpass 800
+(display — digitized US highway signage), Public Sans (body), Martian Mono
+(all data/chips/ledger; it's derived from Space Grotesk, the wordmark face).
+Motion: one easing (`--ease-arrive`), one duration scale, ambient motion only
+in the hero map; everything respects `prefers-reduced-motion`.
+
+Fonts are self-hosted latin subsets in `public/fonts/` with metric-matched
+fallbacks (no layout shift while loading). The wordmark font is Space Grotesk
+600 subset to the nine letters of "tanstrack" (1.1KB).
+
+## Regenerating og.png
+
+It's a 1200×630 screenshot of a small HTML card. If you change the headline,
+easiest path: ask Claude to re-render it, or rebuild any 1200×630 dark card
+using the tokens above and screenshot it.

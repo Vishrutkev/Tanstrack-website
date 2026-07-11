@@ -1,0 +1,389 @@
+/* ── TansTrack design tokens ──────────────────────────────────────────
+   Two worlds, one seam: asphalt (night, operations) above,
+   manifest paper (money) below. Blue = motion. Amber = money.
+   Light is information: nothing glows unless it means something. */
+
+:root {
+  /* palette — named, roles fixed */
+  --asphalt: #0b101c;      /* night surface */
+  --panel: #141c30;        /* lifted dark panel */
+  --headlight: #f5f7fa;    /* text on dark (logo kit) */
+  --signal: #1b5bf9;       /* brand blue: movement + interaction. large/graphic only on dark */
+  --signal-tint: #7da2ff;  /* small blue text on dark (7.7:1) */
+  --signal-deep: #1447d6;  /* links on paper (6.6:1) */
+  --amber: #ffb020;        /* money only: PAID, ledger figures, primary CTA */
+  --amber-deep: #7a5d00;   /* money text on paper (5.6:1) */
+  --manifest: #f6f4ee;     /* paper surface */
+  --card: #fffdf8;         /* paper card */
+  --ink: #10131a;          /* text on paper (logo kit) */
+
+  /* derived shades — no new hues */
+  --muted-dark: #9aa6bc;   /* secondary text on asphalt (7.7:1) */
+  --muted-ink: #5c6572;    /* secondary text on manifest (5.4:1) */
+  --line-dark: rgba(245, 247, 250, 0.1);
+  --line-ink: #e2ddd0;
+  --lane-faint: rgba(125, 162, 255, 0.22); /* atmospheric: unlit lanes */
+
+  /* type */
+  --f-display: 'Overpass', 'Overpass-fb', system-ui, sans-serif;
+  --f-body: 'Public Sans', 'PublicSans-fb', system-ui, sans-serif;
+  --f-mono: 'Martian Mono', 'MartianMono-fb', ui-monospace, monospace;
+
+  /* motion — one easing family, one duration scale */
+  --ease-arrive: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-hover: 150ms;
+  --t-reveal: 300ms;
+  --t-section: 600ms;
+  --t-draw: 1200ms;
+
+  /* layout */
+  --container: 1120px;
+  --gutter: clamp(20px, 4vw, 32px);
+  --r-1: 8px;
+  --r-2: 12px;
+  --r-3: 16px; /* echoes tile radius at card scale */
+}
+
+/* ── fonts: latin subsets, self-hosted, variable ────────────────── */
+@font-face {
+  font-family: 'Overpass';
+  src: url('/fonts/overpass-800-latin.woff2') format('woff2');
+  font-weight: 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Public Sans';
+  src: url('/fonts/public-sans-latin.woff2') format('woff2');
+  font-weight: 400 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Martian Mono';
+  src: url('/fonts/martian-mono-latin.woff2') format('woff2');
+  font-weight: 400 600;
+  font-stretch: 87.5%;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Wordmark';
+  src: url('/fonts/wordmark.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap; /* subset to the 9 wordmark glyphs — 1.1KB */
+}
+
+/* metric-compatible fallbacks (fonttools-derived) — text never jumps */
+@font-face {
+  font-family: 'Overpass-fb';
+  src: local('Arial Bold'), local('Arial');
+  size-adjust: 99.64%;
+  ascent-override: 88.62%;
+  descent-override: 38.44%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'PublicSans-fb';
+  src: local('Arial');
+  size-adjust: 103.14%;
+  ascent-override: 92.11%;
+  descent-override: 21.82%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'MartianMono-fb';
+  src: local('Courier New');
+  size-adjust: 108.32%;
+  ascent-override: 92.32%;
+  descent-override: 18.46%;
+  line-gap-override: 0%;
+}
+
+/* ── base ───────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+body {
+  margin: 0;
+  background: var(--asphalt);
+  color: var(--headlight);
+  font-family: var(--f-body);
+  font-size: 16.5px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+h1, h2, h3, p {
+  margin: 0;
+}
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+a {
+  color: inherit;
+}
+::selection {
+  background: var(--signal);
+  color: var(--headlight);
+}
+:focus-visible {
+  outline: 2px solid var(--signal-tint);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.world-paper :focus-visible {
+  outline-color: var(--signal-deep);
+}
+[id] {
+  scroll-margin-top: 24px;
+}
+
+/* ── worlds ─────────────────────────────────────────────────────── */
+.world-paper {
+  background: var(--manifest);
+  color: var(--ink);
+}
+
+/* ── shared patterns ────────────────────────────────────────────── */
+.container {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.skip-link {
+  position: absolute;
+  left: var(--gutter);
+  top: -48px;
+  z-index: 100;
+  background: var(--amber);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 16px;
+  border-radius: 0 0 var(--r-1) var(--r-1);
+  text-decoration: none;
+  transition: top var(--t-hover) var(--ease-arrive);
+}
+.skip-link:focus-visible {
+  top: 0;
+}
+
+h1, h2 {
+  font-family: var(--f-display);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+h2 {
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.08;
+}
+.lede {
+  margin-top: 14px;
+  font-size: 17.5px;
+  color: var(--muted-dark);
+  max-width: 56ch;
+  text-wrap: pretty;
+}
+.world-paper .lede {
+  color: var(--muted-ink);
+}
+
+/* status chip — Martian Mono, real text */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--f-mono);
+  font-size: 11.5px;
+  font-stretch: 87.5%;
+  letter-spacing: 0.08em;
+  color: var(--muted-dark);
+  border: 1px solid var(--line-dark);
+  border-radius: 999px;
+  padding: 7px 14px;
+  white-space: nowrap;
+}
+.chip b {
+  font-weight: 600;
+  color: var(--signal-tint);
+}
+.chip .amber {
+  color: var(--amber);
+}
+.world-paper .chip {
+  color: var(--muted-ink);
+  border-color: var(--line-ink);
+  background: var(--card);
+}
+.world-paper .chip b {
+  color: var(--signal-deep);
+}
+.world-paper .chip .amber {
+  color: var(--amber-deep);
+}
+.chip-sep {
+  color: currentColor;
+  opacity: 0.45;
+}
+
+/* buttons */
+.btn {
+  display: inline-block;
+  border: 0;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: var(--f-body);
+  font-weight: 600;
+  font-size: 15.5px;
+  line-height: 1;
+  border-radius: 10px;
+  padding: 15px 24px;
+  transition: background var(--t-hover) var(--ease-arrive),
+    border-color var(--t-hover) var(--ease-arrive),
+    transform var(--t-hover) var(--ease-arrive);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn-amber {
+  background: var(--amber);
+  color: var(--ink);
+}
+.btn-amber:hover {
+  background: #ffc14a;
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  color: var(--headlight);
+  border: 1px solid rgba(245, 247, 250, 0.28);
+  padding: 14px 22px;
+}
+.btn-ghost:hover {
+  border-color: rgba(245, 247, 250, 0.6);
+  transform: translateY(-1px);
+}
+.world-paper .btn-ghost {
+  color: var(--ink);
+  border-color: #c9c2b2;
+}
+.world-paper .btn-ghost:hover {
+  border-color: var(--ink);
+}
+
+/* links in prose */
+.world-paper p a {
+  color: var(--signal-deep);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.world-paper p a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* ── scroll reveal: visible by default; motion is an enhancement ──
+   Where the browser supports scroll-driven animations, entrances are
+   SCRUBBED by the scroll itself — elements rise in proportion to your
+   scrolling, then rest. Elsewhere, IO-triggered transitions (Base.astro)
+   do the same thing on a timer. Reduced motion: neither runs. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports not (animation-timeline: view()) {
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity var(--t-section) var(--ease-arrive),
+        transform var(--t-section) var(--ease-arrive);
+      transition-delay: var(--reveal-delay, 0ms);
+    }
+    .reveal.in {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 32%;
+    }
+    @keyframes reveal-rise {
+      from {
+        opacity: 0;
+        transform: translateY(34px);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  }
+}
+
+/* ── route stops: a station node lights up as each section is reached ── */
+.stop {
+  position: relative;
+}
+.stop-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.stop-node {
+  position: absolute;
+  left: -27px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  border: 1.5px solid var(--signal-tint);
+  opacity: 0.5;
+}
+.world-paper .stop-node {
+  border-color: var(--signal-deep);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .stop-node {
+    transition: background var(--t-reveal) var(--ease-arrive),
+      border-color var(--t-reveal) var(--ease-arrive),
+      opacity var(--t-reveal) var(--ease-arrive);
+  }
+}
+.stop.passed .stop-node {
+  background: var(--signal);
+  border-color: var(--signal);
+  opacity: 1;
+}
+.world-paper .stop.passed .stop-node {
+  background: var(--signal-deep);
+  border-color: var(--signal-deep);
+}
+@media (max-width: 900px) {
+  .stop-node {
+    display: none;
+  }
+}

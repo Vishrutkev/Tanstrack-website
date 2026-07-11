@@ -1,0 +1,164 @@
+---
+import Brand from './Brand.astro';
+import { NAV } from '../copy';
+---
+
+<nav class="nav container" aria-label="Main">
+  <Brand />
+  <button type="button" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
+    <span class="bars" aria-hidden="true"></span>
+  </button>
+  <div class="nav-links" id="nav-links">
+    {NAV.links.map((l) => <a href={l.href}>{l.label}</a>)}
+    <a href={NAV.login.href} class="nav-login">{NAV.login.label}</a>
+    <a href={NAV.cta.href} class="nav-cta">{NAV.cta.label}</a>
+  </div>
+</nav>
+
+<style>
+  .nav {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding-block: 22px;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    margin-left: auto;
+    flex-wrap: wrap;
+  }
+  .nav-links a {
+    color: var(--muted-dark);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    transition: color var(--t-hover) var(--ease-arrive);
+  }
+  .nav-links a:hover {
+    color: var(--headlight);
+  }
+  .nav-login {
+    border: 1px solid rgba(245, 247, 250, 0.24);
+    color: var(--headlight) !important;
+    font-weight: 600 !important;
+    padding: 9px 18px;
+    border-radius: 9px;
+  }
+  .nav-login:hover {
+    border-color: rgba(245, 247, 250, 0.55);
+  }
+  .nav-cta {
+    background: var(--amber);
+    color: var(--ink) !important;
+    font-weight: 600 !important;
+    padding: 10px 18px;
+    border-radius: 9px;
+  }
+  .nav-cta:hover {
+    background: #ffc14a;
+  }
+
+  .nav-toggle {
+    display: none;
+    margin-left: auto;
+    width: 42px;
+    height: 42px;
+    background: transparent;
+    border: 1px solid var(--line-dark);
+    border-radius: 9px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .bars,
+  .bars::before,
+  .bars::after {
+    content: '';
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--headlight);
+    border-radius: 2px;
+    transition: transform var(--t-reveal) var(--ease-arrive), opacity var(--t-hover) linear;
+  }
+  .bars {
+    position: relative;
+  }
+  .bars::before {
+    position: absolute;
+    top: -6px;
+  }
+  .bars::after {
+    position: absolute;
+    top: 6px;
+  }
+  .nav-toggle[aria-expanded='true'] .bars {
+    background: transparent;
+  }
+  .nav-toggle[aria-expanded='true'] .bars::before {
+    top: 0;
+    transform: rotate(45deg);
+  }
+  .nav-toggle[aria-expanded='true'] .bars::after {
+    top: 0;
+    transform: rotate(-45deg);
+  }
+
+  @media (max-width: 780px) {
+    .nav {
+      gap: 16px;
+    }
+    .nav-toggle {
+      display: flex;
+    }
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2px;
+      padding: 10px var(--gutter) 18px;
+      background: var(--panel);
+      border-block: 1px solid var(--line-dark);
+    }
+    .nav-links.open {
+      display: flex;
+    }
+    .nav-links a {
+      padding: 12px 4px;
+      font-size: 16px;
+      border-radius: var(--r-1);
+    }
+    .nav-login,
+    .nav-cta {
+      text-align: center;
+      padding: 12px 18px !important;
+      margin-top: 6px;
+    }
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector('.nav-toggle');
+  const links = document.getElementById('nav-links');
+  if (toggle && links) {
+    toggle.addEventListener('click', () => {
+      const open = links.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+    links.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) {
+        links.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+</script>

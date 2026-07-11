@@ -1,0 +1,68 @@
+---
+import Chip from './Chip.astro';
+import Plate from './Plate.astro';
+import { TRANSIT, LOAD } from '../copy';
+const [fig1, fig2, fig3] = TRANSIT.figures;
+---
+
+<section id={TRANSIT.id} class="stop container" aria-labelledby="transit-h">
+  <div class="stop-head reveal">
+    <span class="stop-node" aria-hidden="true"></span>
+    <Chip parts={LOAD.chips.transit} />
+  </div>
+  <h2 id="transit-h" class="reveal">{TRANSIT.h2}</h2>
+  <p class="lede reveal">{TRANSIT.lede}</p>
+
+  <div class="fig-main">
+    <Plate n={fig1.n} caption={fig1.caption} slot={fig1.slot} />
+  </div>
+
+  <div class="blocks">
+    {
+      TRANSIT.blocks.map((b, i) => (
+        <div class="block reveal" style={`--reveal-delay: ${i * 90}ms`}>
+          <h3>{b.title}</h3>
+          <p>{b.body}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="fig-pair">
+    <Plate n={fig2.n} caption={fig2.caption} slot={fig2.slot} />
+    <Plate n={fig3.n} caption={fig3.caption} slot={fig3.slot} />
+  </div>
+</section>
+
+<style>
+  .stop {
+    padding-block: clamp(64px, 9vh, 104px);
+  }
+  .fig-main {
+    margin-top: 40px;
+  }
+  .blocks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 28px 36px;
+    margin-top: 44px;
+  }
+  .block h3 {
+    font-family: var(--f-body);
+    font-weight: 600;
+    font-size: 17.5px;
+    margin-bottom: 8px;
+  }
+  .block p {
+    font-size: 15.5px;
+    line-height: 1.62;
+    color: var(--muted-dark);
+    text-wrap: pretty;
+  }
+  .fig-pair {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 28px;
+    margin-top: 44px;
+  }
+</style>

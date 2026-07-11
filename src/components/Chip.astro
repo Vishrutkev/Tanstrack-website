@@ -1,0 +1,25 @@
+---
+interface Props {
+  parts: string[];
+  amberLast?: boolean;
+  class?: string;
+}
+const { parts, amberLast = false, class: cls = '' } = Astro.props;
+---
+
+<p class={`chip ${cls}`}>
+  {
+    parts.map((part, i) => (
+      <>
+        {i > 0 && <span class="chip-sep" aria-hidden="true">·</span>}
+        {i === 0 ? <b>{part}</b> : <span class={amberLast && i === parts.length - 1 ? 'amber' : ''}>{part}</span>}
+      </>
+    ))
+  }
+</p>
+
+<style>
+  .chip {
+    margin: 0;
+  }
+</style>

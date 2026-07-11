@@ -1,0 +1,70 @@
+---
+// Figure plate: a real product screenshot presented like a manifest
+// figure — mono caption, hairline, no fake browser chrome.
+// Until captures exist, renders a marked slot with exact dimensions
+// so layout (and CLS) is final from day one.
+interface Props {
+  n: string;
+  caption: string;
+  slot: string;
+  src?: string;
+  width?: number;
+  height?: number;
+}
+const { n, caption, slot: slotName, src, width = 1600, height = 1000 } = Astro.props;
+---
+
+<figure class="plate reveal">
+  {
+    src ? (
+      <img src={src} alt={caption.toLowerCase()} width={width} height={height} loading="lazy" decoding="async" />
+    ) : (
+      <div class="plate-slot" role="img" aria-label={`Screenshot pending: ${caption.toLowerCase()}`}>
+        <span>SCREENSHOT SLOT · {slotName}</span>
+      </div>
+    )
+  }
+  <figcaption><b>{n}</b> — {caption}</figcaption>
+</figure>
+
+<style>
+  .plate {
+    margin: 0;
+    min-width: 0;
+  }
+  .plate img,
+  .plate-slot {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top left;
+    border-radius: var(--r-2);
+    border: 1px solid var(--line-dark);
+    background: var(--panel);
+  }
+  .plate-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-style: dashed;
+    border-color: rgba(125, 162, 255, 0.35);
+  }
+  .plate-slot span {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--muted-dark);
+  }
+  figcaption {
+    margin-top: 12px;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    font-stretch: 87.5%;
+    letter-spacing: 0.08em;
+    color: var(--muted-dark);
+  }
+  figcaption b {
+    font-weight: 600;
+    color: var(--signal-tint);
+  }
+</style>

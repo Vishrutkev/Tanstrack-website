@@ -1,0 +1,181 @@
+---
+import Chip from './Chip.astro';
+import { CTA, LOAD, SITE } from '../copy';
+---
+
+<section id={CTA.id} class="stop container" aria-labelledby="cta-h">
+  <div class="grid">
+    <div class="pitch">
+      <div class="stop-head reveal">
+        <span class="stop-node" aria-hidden="true"></span>
+        <Chip parts={LOAD.chips.paid} amberLast />
+      </div>
+      <h2 id="cta-h" class="reveal">{CTA.h2}</h2>
+      <p class="lede reveal">{CTA.lede}</p>
+      <p class="pricing reveal">{CTA.pricing}</p>
+      <p class="direct reveal">
+        {CTA.emailLede} <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+      </p>
+    </div>
+
+    <form class="form reveal" id="demo-form" novalidate>
+      <label>
+        {CTA.form.name.label}
+        <input name="name" autocomplete="name" required placeholder={CTA.form.name.placeholder} />
+      </label>
+      <label>
+        {CTA.form.company.label}
+        <input name="company" autocomplete="organization" required placeholder={CTA.form.company.placeholder} />
+      </label>
+      <label>
+        {CTA.form.email.label}
+        <input name="email" type="email" autocomplete="email" required placeholder={CTA.form.email.placeholder} />
+      </label>
+      <label>
+        {CTA.form.message.label}
+        <textarea name="message" rows="4" placeholder={CTA.form.message.placeholder}></textarea>
+      </label>
+      <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <button type="submit" class="btn btn-amber">{CTA.form.submit}</button>
+      <p class="form-status" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .stop {
+    padding-block: clamp(24px, 4vh, 40px) clamp(72px, 10vh, 112px);
+  }
+  .grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: clamp(32px, 5vw, 64px);
+    align-items: start;
+    border-top: 1px solid var(--line-ink);
+    padding-top: clamp(56px, 8vh, 88px);
+  }
+  .pricing {
+    margin-top: 18px;
+    font-size: 15.5px;
+    color: var(--muted-ink);
+    max-width: 48ch;
+  }
+  .direct {
+    margin-top: 26px;
+    font-size: 15.5px;
+    color: var(--muted-ink);
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: var(--card);
+    border: 1px solid var(--line-ink);
+    border-radius: var(--r-3);
+    padding: 28px;
+  }
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  input,
+  textarea {
+    border: 1px solid #d4cebe;
+    border-radius: var(--r-1);
+    padding: 12px 14px;
+    font-family: var(--f-body);
+    font-size: 15.5px;
+    background: #fff;
+    color: var(--ink);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: #9a948a;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 88px;
+  }
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+  }
+  .form-status {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    min-height: 1.2em;
+  }
+  .form-status.sending {
+    color: var(--muted-ink);
+    font-weight: 400;
+  }
+  .form-status.sent {
+    color: #1a7a4a;
+  }
+  .form-status.error {
+    color: #b03a2e;
+  }
+</style>
+
+<script>
+  import { CTA, SITE } from '../copy';
+
+  const form = document.getElementById('demo-form') as HTMLFormElement | null;
+  const status = form?.querySelector('.form-status') as HTMLParagraphElement | null;
+  const KEY = (import.meta.env.PUBLIC_WEB3FORMS_KEY || '').trim();
+
+  function setStatus(kind: string, text: string) {
+    if (!status) return;
+    status.className = `form-status ${kind}`;
+    status.textContent = text;
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.reportValidity()) return;
+    const f = new FormData(form);
+    if (f.get('botcheck')) return; // honeypot
+
+    if (!KEY) {
+      const subject = encodeURIComponent(`Demo request — ${f.get('company') || ''}`);
+      const body = encodeURIComponent(
+        `Name: ${f.get('name')}\nCompany: ${f.get('company')}\nEmail: ${f.get('email')}\n\n${f.get('message') || ''}`
+      );
+      location.href = `mailto:${SITE.email}?subject=${subject}&body=${body}`;
+      return;
+    }
+
+    setStatus('sending', CTA.form.sending);
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: KEY,
+          subject: `Demo request — ${f.get('company') || ''}`,
+          from_name: 'TansTrack website',
+          name: f.get('name'),
+          company: f.get('company'),
+          email: f.get('email'),
+          message: f.get('message') || '',
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error();
+      setStatus('sent', CTA.form.sent);
+      form.reset();
+    } catch {
+      setStatus('error', CTA.form.error);
+    }
+  });
+</script>
