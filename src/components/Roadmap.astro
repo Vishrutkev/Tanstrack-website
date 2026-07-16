@@ -75,4 +75,31 @@ import { ROADMAP } from '../copy';
     letter-spacing: 0.12em;
     fill: var(--muted-ink);
   }
+  /* unbuilt lanes assemble when the map arrives */
+  @media (prefers-reduced-motion: no-preference) {
+    .future.in .dash {
+      animation: lane-settle 1.3s var(--ease-arrive) both;
+    }
+    .future.in .dash:nth-of-type(2) {
+      animation-delay: 130ms;
+    }
+    .future.in .dash:nth-of-type(3) {
+      animation-delay: 260ms;
+    }
+    .future.in text,
+    .future.in .hub {
+      animation: lane-appear 500ms var(--ease-arrive) 650ms both;
+    }
+    @keyframes lane-settle {
+      from {
+        stroke-dashoffset: 50;
+        opacity: 0.08;
+      }
+    }
+    @keyframes lane-appear {
+      from {
+        opacity: 0;
+      }
+    }
+  }
 </style>

@@ -13,14 +13,14 @@ import { HANDOFF, LOAD } from '../copy';
     <p class="lede reveal">{HANDOFF.lede}</p>
 
     <div class="split">
-      <div class="side road reveal">
+      <div class="side road reveal lift">
         <p class="side-label">{HANDOFF.road.label}</p>
         <h3>{HANDOFF.road.title}</h3>
         <ul>
           {HANDOFF.road.items.map((it) => <li>{it}</li>)}
         </ul>
       </div>
-      <div class="side office reveal" style="--reveal-delay: 120ms">
+      <div class="side office reveal lift" style="--reveal-delay: 120ms">
         <p class="side-label">{HANDOFF.office.label}</p>
         <h3>{HANDOFF.office.title}</h3>
         <ul>
@@ -32,6 +32,7 @@ import { HANDOFF, LOAD } from '../copy';
 
   <!-- the seam: paper begins here and never ends -->
   <div class="owner">
+    <div class="seam" aria-hidden="true"><span>{HANDOFF.seam}</span></div>
     <div class="container">
       <p class="side-label">{HANDOFF.owner.label}</p>
       <p class="owner-body">{HANDOFF.owner.body}</p>
@@ -117,10 +118,41 @@ import { HANDOFF, LOAD } from '../copy';
   }
 
   .owner {
+    position: relative;
     margin-top: clamp(48px, 7vh, 72px);
     background: var(--manifest);
     color: var(--ink);
-    padding-block: 40px 44px;
+    padding-block: 46px 44px;
+  }
+  /* perforation at the world seam — where the load changes hands */
+  .seam {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-inline: var(--gutter);
+  }
+  .seam::before,
+  .seam::after {
+    content: '';
+    flex: 1;
+    border-top: 1px dashed rgba(154, 166, 188, 0.55);
+  }
+  .seam span {
+    font-family: var(--f-mono);
+    font-stretch: 87.5%;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--muted-ink);
+    background: var(--manifest);
+    border: 1px dashed #c3bcab;
+    border-radius: 999px;
+    padding: 7px 16px;
+    white-space: nowrap;
   }
   .owner .side-label {
     color: var(--muted-ink);

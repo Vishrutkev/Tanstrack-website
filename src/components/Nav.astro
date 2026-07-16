@@ -3,26 +3,57 @@ import Brand from './Brand.astro';
 import { NAV } from '../copy';
 ---
 
-<nav class="nav container" aria-label="Main">
-  <Brand />
-  <button type="button" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
-    <span class="bars" aria-hidden="true"></span>
-  </button>
-  <div class="nav-links" id="nav-links">
-    {NAV.links.map((l) => <a href={l.href}>{l.label}</a>)}
-    <a href={NAV.login.href} class="nav-login">{NAV.login.label}</a>
-    <a href={NAV.cta.href} class="nav-cta">{NAV.cta.label}</a>
-  </div>
-</nav>
+<div class="nav-sentinel" aria-hidden="true"></div>
+<header class="nav-bar" id="nav-bar">
+  <nav class="nav container" aria-label="Main">
+    <Brand />
+    <button type="button" class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
+      <span class="bars" aria-hidden="true"></span>
+    </button>
+    <div class="nav-links" id="nav-links">
+      {NAV.links.map((l) => <a href={l.href} data-spy={l.href}>{l.label}</a>)}
+      <a href={NAV.login.href} class="nav-login">{NAV.login.label}</a>
+      <a href={NAV.cta.href} class="nav-cta">{NAV.cta.label}</a>
+    </div>
+  </nav>
+</header>
 
 <style>
+  /* invisible marker at the top of the document: once ~24px of it has
+     scrolled past, the bar gains its glass elevation */
+  .nav-sentinel {
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 24px;
+  }
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    border-bottom: 1px solid transparent;
+    transition: background-color var(--t-reveal) var(--ease-arrive),
+      border-color var(--t-reveal) var(--ease-arrive);
+  }
+  .nav-bar.scrolled {
+    background: rgba(11, 16, 28, 0.82);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    backdrop-filter: blur(14px) saturate(1.4);
+    border-bottom-color: var(--line-dark);
+  }
+
   .nav {
     position: relative;
     display: flex;
     align-items: center;
     gap: 28px;
-    padding-block: 22px;
+    padding-block: 20px;
+    transition: padding var(--t-reveal) var(--ease-arrive);
   }
+  .nav-bar.scrolled .nav {
+    padding-block: 12px;
+  }
+
   .nav-links {
     display: flex;
     align-items: center;
@@ -31,21 +62,42 @@ import { NAV } from '../copy';
     flex-wrap: wrap;
   }
   .nav-links a {
+    position: relative;
     color: var(--muted-dark);
     text-decoration: none;
     font-size: 15px;
     font-weight: 500;
     transition: color var(--t-hover) var(--ease-arrive);
   }
-  .nav-links a:hover {
+  .nav-links a:hover,
+  .nav-links a[aria-current='true'] {
     color: var(--headlight);
   }
+  /* scrollspy underline — slides in from the left on the active section */
+  .nav-links a:not(.nav-login):not(.nav-cta)::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -7px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--signal-tint);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--t-reveal) var(--ease-arrive);
+  }
+  .nav-links a[aria-current='true']::after {
+    transform: scaleX(1);
+  }
+
   .nav-login {
     border: 1px solid rgba(245, 247, 250, 0.24);
     color: var(--headlight) !important;
     font-weight: 600 !important;
     padding: 9px 18px;
     border-radius: 9px;
+    transition: border-color var(--t-hover) var(--ease-arrive) !important;
   }
   .nav-login:hover {
     border-color: rgba(245, 247, 250, 0.55);
@@ -56,6 +108,7 @@ import { NAV } from '../copy';
     font-weight: 600 !important;
     padding: 10px 18px;
     border-radius: 9px;
+    transition: background var(--t-hover) var(--ease-arrive) !important;
   }
   .nav-cta:hover {
     background: #ffc14a;
@@ -116,7 +169,6 @@ import { NAV } from '../copy';
       display: flex;
     }
     .nav-links {
-      display: none;
       position: absolute;
       top: 100%;
       left: 0;
@@ -128,14 +180,29 @@ import { NAV } from '../copy';
       padding: 10px var(--gutter) 18px;
       background: var(--panel);
       border-block: 1px solid var(--line-dark);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      pointer-events: none;
+      transition: opacity var(--t-reveal) var(--ease-arrive),
+        transform var(--t-reveal) var(--ease-arrive),
+        visibility 0s linear var(--t-reveal);
     }
     .nav-links.open {
-      display: flex;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      pointer-events: auto;
+      transition: opacity var(--t-reveal) var(--ease-arrive),
+        transform var(--t-reveal) var(--ease-arrive), visibility 0s;
     }
     .nav-links a {
       padding: 12px 4px;
       font-size: 16px;
       border-radius: var(--r-1);
+    }
+    .nav-links a:not(.nav-login):not(.nav-cta)::after {
+      display: none;
     }
     .nav-login,
     .nav-cta {
@@ -144,21 +211,69 @@ import { NAV } from '../copy';
       margin-top: 6px;
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-bar,
+    .nav,
+    .nav-links,
+    .nav-links a::after {
+      transition: none;
+    }
+  }
 </style>
 
 <script>
+  const bar = document.getElementById('nav-bar');
+  const sentinel = document.querySelector('.nav-sentinel');
   const toggle = document.querySelector('.nav-toggle');
   const links = document.getElementById('nav-links');
+
+  // glass elevation once the page has scrolled
+  if (bar && sentinel && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => {
+      bar.classList.toggle('scrolled', !e.isIntersecting);
+    }).observe(sentinel);
+  }
+
+  // mobile menu
+  const closeMenu = () => {
+    links?.classList.remove('open');
+    toggle?.setAttribute('aria-expanded', 'false');
+  };
   if (toggle && links) {
     toggle.addEventListener('click', () => {
       const open = links.classList.toggle('open');
       toggle.setAttribute('aria-expanded', String(open));
     });
     links.addEventListener('click', (e) => {
-      if ((e.target as HTMLElement).closest('a')) {
-        links.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
+      if ((e.target as HTMLElement).closest('a')) closeMenu();
+    });
+    addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && links.classList.contains('open')) {
+        closeMenu();
+        (toggle as HTMLElement).focus();
       }
+    });
+  }
+
+  // scrollspy: the section crossing the upper-middle band owns the underline
+  const spyLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('.nav-links a[data-spy]'));
+  const byId = new Map(spyLinks.map((a) => [(a.dataset.spy || '').slice(1), a]));
+  if (byId.size && 'IntersectionObserver' in window) {
+    const spy = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            spyLinks.forEach((a) => a.removeAttribute('aria-current'));
+            byId.get(e.target.id)?.setAttribute('aria-current', 'true');
+          }
+        }
+      },
+      { rootMargin: '-35% 0px -60% 0px' }
+    );
+    byId.forEach((_, id) => {
+      const section = document.getElementById(id);
+      if (section) spy.observe(section);
     });
   }
 </script>

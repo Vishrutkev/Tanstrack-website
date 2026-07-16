@@ -13,6 +13,12 @@ import { CTA, LOAD, SITE } from '../copy';
       <h2 id="cta-h" class="reveal">{CTA.h2}</h2>
       <p class="lede reveal">{CTA.lede}</p>
       <p class="pricing reveal">{CTA.pricing}</p>
+      <div class="next reveal">
+        <p class="next-label">{CTA.next.label}</p>
+        <ol>
+          {CTA.next.steps.map((s) => <li>{s}</li>)}
+        </ol>
+      </div>
       <p class="direct reveal">
         {CTA.emailLede} <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
       </p>
@@ -38,6 +44,7 @@ import { CTA, LOAD, SITE } from '../copy';
       <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
       <button type="submit" class="btn btn-amber">{CTA.form.submit}</button>
       <p class="form-status" role="status" aria-live="polite"></p>
+      <div class="stamp" aria-hidden="true">RECEIVED</div>
     </form>
   </div>
 </section>
@@ -61,6 +68,48 @@ import { CTA, LOAD, SITE } from '../copy';
     color: var(--muted-ink);
     max-width: 48ch;
   }
+  .next {
+    margin-top: 28px;
+  }
+  .next-label {
+    font-family: var(--f-mono);
+    font-stretch: 87.5%;
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    color: var(--muted-ink);
+    margin-bottom: 12px;
+  }
+  .next ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    counter-reset: step;
+  }
+  .next li {
+    position: relative;
+    padding-left: 38px;
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--muted-ink);
+    counter-increment: step;
+    text-wrap: pretty;
+    max-width: 52ch;
+  }
+  .next li::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 2px;
+    font-family: var(--f-mono);
+    font-stretch: 87.5%;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--signal-deep);
+  }
   .direct {
     margin-top: 26px;
     font-size: 15.5px;
@@ -68,6 +117,7 @@ import { CTA, LOAD, SITE } from '../copy';
   }
 
   .form {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -93,6 +143,14 @@ import { CTA, LOAD, SITE } from '../copy';
     font-size: 15.5px;
     background: #fff;
     color: var(--ink);
+    transition: border-color var(--t-hover) var(--ease-arrive),
+      box-shadow var(--t-hover) var(--ease-arrive);
+  }
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: none;
+    border-color: var(--signal-deep);
+    box-shadow: 0 0 0 3px rgba(20, 71, 214, 0.14);
   }
   input::placeholder,
   textarea::placeholder {
@@ -124,6 +182,53 @@ import { CTA, LOAD, SITE } from '../copy';
   }
   .form-status.error {
     color: #b03a2e;
+  }
+
+  /* the manifest gets its stamp */
+  .stamp {
+    position: absolute;
+    left: 50%;
+    top: 44%;
+    transform: translate(-50%, -50%) rotate(-6deg);
+    font-family: var(--f-mono);
+    font-stretch: 87.5%;
+    font-weight: 600;
+    font-size: clamp(22px, 3vw, 30px);
+    letter-spacing: 0.3em;
+    text-indent: 0.3em;
+    color: #1a7a4a;
+    border: 3px solid rgba(26, 122, 74, 0.75);
+    border-radius: 10px;
+    padding: 12px 22px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .form.stamped :is(label, .btn) {
+    opacity: 0.18;
+    transition: opacity var(--t-section) var(--ease-arrive);
+    pointer-events: none;
+  }
+  .form.stamped .stamp {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .form.stamped .stamp {
+      animation: cta-stamp 420ms var(--ease-arrive) 150ms both;
+    }
+    @keyframes cta-stamp {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(-6deg) scale(1.45);
+      }
+      62% {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(-6deg) scale(0.96);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(-6deg) scale(1);
+      }
+    }
   }
 </style>
 
@@ -174,6 +279,8 @@ import { CTA, LOAD, SITE } from '../copy';
       if (!data.success) throw new Error();
       setStatus('sent', CTA.form.sent);
       form.reset();
+      form.classList.add('stamped');
+      (form.querySelector('button[type="submit"]') as HTMLButtonElement | null)?.setAttribute('disabled', '');
     } catch {
       setStatus('error', CTA.form.error);
     }

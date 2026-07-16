@@ -1,0 +1,190 @@
+---
+import Chip from './Chip.astro';
+import { FAQ } from '../copy';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ.items.map((it) => ({
+    '@type': 'Question',
+    name: it.q,
+    acceptedAnswer: { '@type': 'Answer', text: it.a },
+  })),
+};
+---
+
+<section id={FAQ.id} class="stop container" aria-labelledby="faq-h">
+  <div class="inner">
+    <div class="stop-head reveal">
+      <span class="stop-node" aria-hidden="true"></span>
+      <Chip parts={FAQ.chip} />
+    </div>
+    <h2 id="faq-h" class="reveal">{FAQ.h2}</h2>
+    <p class="lede reveal">{FAQ.lede}</p>
+
+    <div class="qa-list">
+      {
+        FAQ.items.map((it, i) => (
+          <div class="qa reveal" style={`--reveal-delay: ${Math.min(i * 50, 200)}ms`}>
+            <h3 class="qa-h">
+              <button type="button" class="qa-q" id={`qa-q-${i}`} aria-expanded="false" aria-controls={`qa-a-${i}`}>
+                <span class="qa-i" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <span class="qa-text">{it.q}</span>
+                <span class="qa-mark" aria-hidden="true" />
+              </button>
+            </h3>
+            <div class="qa-a" id={`qa-a-${i}`} role="region" aria-labelledby={`qa-q-${i}`}>
+              <div class="qa-clip">
+                <p>{it.a}</p>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+<style>
+  .stop {
+    padding-block: 0 clamp(64px, 9vh, 96px);
+  }
+  .inner {
+    border-top: 1px solid var(--line-ink);
+    padding-top: clamp(56px, 8vh, 88px);
+  }
+  .qa-list {
+    margin-top: 40px;
+    max-width: 800px;
+  }
+  .qa {
+    border-bottom: 1px solid var(--line-ink);
+  }
+  .qa:first-of-type {
+    border-top: 2px solid var(--ink);
+  }
+  .qa-h {
+    margin: 0;
+  }
+  .qa-q {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    width: 100%;
+    padding: 19px 2px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    text-align: left;
+    font-family: var(--f-body);
+    font-size: 16.5px;
+    font-weight: 600;
+    color: var(--ink);
+    transition: color var(--t-hover) var(--ease-arrive);
+  }
+  .qa-q:hover {
+    color: var(--signal-deep);
+  }
+  .qa-i {
+    font-family: var(--f-mono);
+    font-stretch: 87.5%;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--muted-ink);
+    width: 22px;
+    flex: none;
+  }
+  .qa-text {
+    flex: 1;
+  }
+  .qa-mark {
+    position: relative;
+    flex: none;
+    width: 12px;
+    height: 12px;
+    align-self: center;
+  }
+  .qa-mark::before,
+  .qa-mark::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 12px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--muted-ink);
+    transition: transform var(--t-reveal) var(--ease-arrive), background var(--t-hover) var(--ease-arrive);
+  }
+  .qa-mark::after {
+    transform: rotate(90deg);
+  }
+  .qa-q:hover .qa-mark::before,
+  .qa-q:hover .qa-mark::after {
+    background: var(--signal-deep);
+  }
+  .qa.open .qa-mark::before {
+    transform: rotate(180deg);
+  }
+  .qa.open .qa-mark::after {
+    transform: rotate(180deg);
+    opacity: 0; /* plus folds to minus */
+  }
+
+  .qa-a {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--t-reveal) var(--ease-arrive);
+  }
+  .qa.open .qa-a {
+    grid-template-rows: 1fr;
+  }
+  .qa-clip {
+    overflow: hidden;
+  }
+  .qa-clip p {
+    margin: 2px 0 22px 40px;
+    max-width: 64ch;
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: var(--muted-ink);
+    text-wrap: pretty;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity var(--t-reveal) var(--ease-arrive), transform var(--t-reveal) var(--ease-arrive);
+  }
+  .qa.open .qa-clip p {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 560px) {
+    .qa-q {
+      gap: 12px;
+    }
+    .qa-clip p {
+      margin-left: 34px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .qa-a,
+    .qa-clip p,
+    .qa-mark::before,
+    .qa-mark::after {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.qa-q').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const qa = btn.closest('.qa');
+      if (!qa) return;
+      const open = qa.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+</script>

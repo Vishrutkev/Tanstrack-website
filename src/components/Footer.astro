@@ -5,6 +5,20 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
+  <!-- the whole journey, at rest -->
+  <div class="container journey" aria-hidden="true">
+    {
+      FOOTER.journey.map((j, i) => (
+        <Fragment>
+          {i > 0 && <span class="j-line" />}
+          <span class={i === FOOTER.journey.length - 1 ? 'j-stop paid' : 'j-stop'}>
+            <span class="j-node" />
+            {j}
+          </span>
+        </Fragment>
+      ))
+    }
+  </div>
   <div class="container inner">
     <div class="col brand-col">
       <Brand size={24} />
@@ -27,12 +41,60 @@ const year = new Date().getFullYear();
     background: var(--asphalt);
     color: var(--headlight);
   }
+  .journey {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    row-gap: 12px;
+    flex-wrap: wrap;
+    padding-block: 30px 26px;
+    font-family: var(--f-mono);
+    font-stretch: 87.5%;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--muted-dark);
+  }
+  .j-line {
+    flex: 1 1 20px;
+    min-width: 16px;
+    border-top: 1px dashed rgba(245, 247, 250, 0.18);
+  }
+  .j-stop {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .j-node {
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+    background: var(--signal-tint);
+    opacity: 0.7;
+  }
+  .j-stop.paid {
+    color: var(--amber);
+  }
+  .j-stop.paid .j-node {
+    background: var(--amber);
+    opacity: 1;
+  }
+  @media (max-width: 640px) {
+    .journey {
+      font-size: 9px;
+      gap: 8px;
+    }
+    .j-line {
+      min-width: 8px;
+    }
+  }
   .inner {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 28px;
-    padding-block: 40px 48px;
+    padding-block: 34px 48px;
     align-items: start;
+    border-top: 1px solid var(--line-dark);
   }
   .brand-col .line {
     margin-top: 12px;

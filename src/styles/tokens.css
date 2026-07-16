@@ -145,7 +145,7 @@ a {
   outline-color: var(--signal-deep);
 }
 [id] {
-  scroll-margin-top: 24px;
+  scroll-margin-top: 84px; /* clears the sticky nav */
 }
 
 /* ── worlds ─────────────────────────────────────────────────────── */
@@ -246,6 +246,14 @@ h2 {
   color: currentColor;
   opacity: 0.45;
 }
+@media (max-width: 480px) {
+  .chip {
+    white-space: normal;
+    flex-wrap: wrap;
+    row-gap: 3px;
+    max-width: 100%;
+  }
+}
 
 /* buttons */
 .btn {
@@ -337,6 +345,33 @@ h2 {
         transform: none;
       }
     }
+  }
+}
+
+/* ── micro-motion utilities ─────────────────────────────────────────
+   .lift  — cards rise 2px on hover (transform only, never on touch)
+   stamp  — a chip/badge lands like a rubber stamp (scale + settle)  */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .lift {
+    transition: transform var(--t-reveal) var(--ease-arrive),
+      border-color var(--t-reveal) var(--ease-arrive);
+  }
+  .lift:hover {
+    transform: translateY(-2px);
+  }
+}
+@keyframes stamp {
+  0% {
+    opacity: 0;
+    transform: scale(1.35) rotate(-2deg);
+  }
+  62% {
+    opacity: 1;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

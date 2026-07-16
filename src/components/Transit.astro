@@ -1,6 +1,9 @@
 ---
 import Chip from './Chip.astro';
 import Plate from './Plate.astro';
+import VizGrid from './VizGrid.astro';
+import VizImport from './VizImport.astro';
+import VizBulk from './VizBulk.astro';
 import { TRANSIT, LOAD } from '../copy';
 const [fig1, fig2, fig3] = TRANSIT.figures;
 ---
@@ -14,7 +17,9 @@ const [fig1, fig2, fig3] = TRANSIT.figures;
   <p class="lede reveal">{TRANSIT.lede}</p>
 
   <div class="fig-main">
-    <Plate n={fig1.n} caption={fig1.caption} slot={fig1.slot} />
+    <Plate n={fig1.n} caption={fig1.caption}>
+      <VizGrid />
+    </Plate>
   </div>
 
   <div class="blocks">
@@ -29,9 +34,14 @@ const [fig1, fig2, fig3] = TRANSIT.figures;
   </div>
 
   <div class="fig-pair">
-    <Plate n={fig2.n} caption={fig2.caption} slot={fig2.slot} />
-    <Plate n={fig3.n} caption={fig3.caption} slot={fig3.slot} />
+    <Plate n={fig2.n} caption={fig2.caption}>
+      <VizImport />
+    </Plate>
+    <Plate n={fig3.n} caption={fig3.caption}>
+      <VizBulk />
+    </Plate>
   </div>
+  <p class="fig-note reveal">{TRANSIT.note}</p>
 </section>
 
 <style>
@@ -64,5 +74,10 @@ const [fig1, fig2, fig3] = TRANSIT.figures;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 28px;
     margin-top: 44px;
+  }
+  .fig-note {
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--muted-dark);
   }
 </style>

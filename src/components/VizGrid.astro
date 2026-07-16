@@ -1,0 +1,227 @@
+---
+// FIG. 01 — the loads grid, drawn from the product. On reveal: rows
+// land, the keyboard focus ring steps down to LD-2481, its status
+// flips to IN TRANSIT, and the Undo toast slides up. Without motion
+// (or before play) the scene rests at its final frame.
+import { VIZ } from '../copy';
+const g = VIZ.grid;
+const TOP = 88; // first row's top edge
+const ROW_H = 56;
+const rows = g.rows.map((r, i) => ({ r, i, y: TOP + i * ROW_H }));
+const focusY = TOP + g.focusRow * ROW_H;
+const statusFill = (s: string) =>
+  s === 'IN TRANSIT' ? 'var(--signal-tint)' : s === 'DELIVERED' ? 'var(--muted-dark)' : 'var(--headlight)';
+---
+
+<svg
+  class="viz viz-grid"
+  viewBox="0 0 800 500"
+  role="img"
+  aria-label="The loads grid: keyboard focus moves to load LD-2481, its status changes from dispatched to in transit, and an undo toast appears."
+>
+  <!-- toolbar -->
+  <text class="ttl" x="28" y="36">{g.title}</text>
+  <g class="pill">
+    <rect x="556" y="14" width="112" height="30" rx="8"></rect>
+    <text x="612" y="33" text-anchor="middle">{g.tools[0]}</text>
+  </g>
+  <g class="pill">
+    <rect x="678" y="14" width="98" height="30" rx="8"></rect>
+    <text x="727" y="33" text-anchor="middle">{g.tools[1]}</text>
+  </g>
+
+  <!-- header row -->
+  <rect x="0" y="56" width="800" height="32" fill="rgba(245,247,250,0.035)"></rect>
+  <g class="hdr">
+    <text x="28" y="77">{g.cols[0]}</text>
+    <text x="132" y="77">{g.cols[1]}</text>
+    <text x="270" y="77">{g.cols[2]}</text>
+    <text x="524" y="77">{g.cols[3]}</text>
+    <text x="772" y="77" text-anchor="end">{g.cols[4]}</text>
+  </g>
+  <line class="rule" x1="0" y1="88" x2="800" y2="88"></line>
+
+  <!-- the focus ring: steps down the rows to LD-2481 -->
+  <rect
+    class="ring"
+    x="14"
+    y={TOP + 4}
+    width="772"
+    height={ROW_H - 8}
+    rx="9"
+    style={`--ring-end: ${g.focusRow * ROW_H}px`}></rect>
+
+  <!-- rows -->
+  {
+    rows.map(({ r, i, y }) => (
+      <g class="row" style={`--ri: ${i}`}>
+        <text class="id" x="28" y={y + 34}>{r[0]}</text>
+        <text class="lane" x="132" y={y + 34}>{r[1]}</text>
+        <text class="carrier" x="270" y={y + 34}>{r[2]}</text>
+        {i !== g.focusRow && (
+          <g>
+            <circle cx="529" cy={y + 30} r="3.2" fill={statusFill(r[3])} />
+            <text class="status" x="541" y={y + 34} fill={statusFill(r[3])}>{r[3]}</text>
+          </g>
+        )}
+        <text class="rate" x="772" y={y + 34} text-anchor="end">{r[4]}</text>
+        <line class="rule" x1="0" y1={y + ROW_H} x2="800" y2={y + ROW_H} />
+      </g>
+    ))
+  }
+
+  <!-- LD-2481's status: DISPATCHED slides out, IN TRANSIT slides in -->
+  <g class="st-old">
+    <circle cx="529" cy={focusY + 30} r="3.2" fill="var(--headlight)"></circle>
+    <text class="status" x="541" y={focusY + 34} fill="var(--headlight)">{g.rows[g.focusRow][3]}</text>
+  </g>
+  <g class="st-new">
+    <circle cx="529" cy={focusY + 30} r="3.2" fill="var(--signal-tint)"></circle>
+    <text class="status" x="541" y={focusY + 34} fill="var(--signal-tint)">{g.flipTo}</text>
+  </g>
+
+  <!-- undo toast -->
+  <g class="toast">
+    <rect x="516" y="430" width="260" height="46" rx="10"></rect>
+    <text class="toast-msg" x="534" y="458">{g.toast[0]}</text>
+    <text class="toast-undo" x="758" y="458" text-anchor="end">{g.toast[1]}</text>
+  </g>
+</svg>
+
+<style>
+  text {
+    font-family: var(--f-mono);
+    font-stretch: 87.5%;
+    letter-spacing: 0.04em;
+  }
+  .ttl {
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--headlight);
+    letter-spacing: 0.1em;
+  }
+  .pill rect {
+    fill: none;
+    stroke: var(--line-dark);
+  }
+  .pill text {
+    font-size: 10px;
+    fill: var(--muted-dark);
+    letter-spacing: 0.08em;
+  }
+  .hdr text {
+    font-size: 10px;
+    fill: var(--muted-dark);
+    letter-spacing: 0.12em;
+  }
+  .rule {
+    stroke: rgba(245, 247, 250, 0.07);
+  }
+  .id {
+    font-size: 12px;
+    font-weight: 600;
+    fill: #cdd6e4;
+  }
+  .lane {
+    font-size: 11.5px;
+    fill: var(--muted-dark);
+  }
+  .carrier {
+    font-family: var(--f-body);
+    font-size: 12.5px;
+    letter-spacing: 0;
+    fill: var(--muted-dark);
+  }
+  .status {
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+  }
+  .rate {
+    font-size: 12px;
+    fill: var(--amber);
+  }
+  .ring {
+    fill: rgba(27, 91, 249, 0.08);
+    stroke: var(--signal);
+    stroke-width: 1.75;
+    transform: translateY(var(--ring-end));
+  }
+  .st-old {
+    opacity: 0;
+  }
+  .toast rect {
+    fill: #1d2842;
+    stroke: rgba(125, 162, 255, 0.28);
+  }
+  .toast-msg {
+    font-size: 11.5px;
+    fill: var(--headlight);
+    letter-spacing: 0.02em;
+  }
+  .toast-undo {
+    font-size: 11.5px;
+    font-weight: 600;
+    fill: var(--amber);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── the scene, played on arrival ── */
+  @media (prefers-reduced-motion: no-preference) {
+    .viz.play .row {
+      opacity: 0;
+      animation: vg-fade 360ms var(--ease-arrive) calc(var(--ri) * 60ms) forwards;
+    }
+    .viz.play .ring {
+      opacity: 0;
+      transform: translateY(0);
+      animation: vg-fade 300ms var(--ease-arrive) 420ms forwards,
+        vg-step 1.5s steps(1, end) 500ms forwards;
+    }
+    .viz.play .st-old {
+      opacity: 0;
+      animation: vg-fade 360ms var(--ease-arrive) 180ms both,
+        vg-out 280ms var(--ease-arrive) 2350ms forwards;
+    }
+    .viz.play .st-new {
+      opacity: 0;
+      transform: translateY(7px);
+      animation: vg-rise 320ms var(--ease-arrive) 2450ms forwards;
+    }
+    .viz.play .toast {
+      opacity: 0;
+      transform: translateY(14px);
+      animation: vg-rise 380ms var(--ease-arrive) 2950ms forwards;
+    }
+    @keyframes vg-fade {
+      to {
+        opacity: 1;
+      }
+    }
+    @keyframes vg-out {
+      to {
+        opacity: 0;
+      }
+    }
+    @keyframes vg-rise {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    /* discrete keyboard steps: row 0 → 1 → 2 → LD-2481 */
+    @keyframes vg-step {
+      0% {
+        transform: translateY(0);
+      }
+      33% {
+        transform: translateY(56px);
+      }
+      66% {
+        transform: translateY(112px);
+      }
+      100% {
+        transform: translateY(var(--ring-end));
+      }
+    }
+  }
+</style>

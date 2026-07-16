@@ -1,0 +1,246 @@
+---
+// FIG. 02 — Excel import, drawn from the product. On reveal: the
+// sheet lands, mapping lines draw from its columns to load fields,
+// values fill in, and the result chip stamps. Resting state (no
+// motion) is the finished mapping.
+import { VIZ } from '../copy';
+const x = VIZ.xlsx;
+const colX = [38, 106, 174];
+const rowY = [100, 130, 160];
+const fieldY = [102, 150, 198]; // label baselines; values +18
+---
+
+<svg
+  class="viz viz-xlsx"
+  viewBox="0 0 560 350"
+  role="img"
+  aria-label="Excel import: spreadsheet columns are mapped to load fields and forty-two loads are built with nothing retyped."
+>
+  <!-- the sheet you already get -->
+  <g class="sheet">
+    <path class="doc" d="M 22 16 h 9 l 4 4 v 8 h -13 z"></path>
+    <text class="file" x="41" y="26">{x.file}</text>
+    <rect class="card" x="22" y="42" width="216" height="214" rx="10"></rect>
+    <g class="hdr">
+      {x.sheetCols.map((c, i) => <text x={colX[i]} y="70">{c}</text>)}
+    </g>
+    <line class="rule strong" x1="34" y1="80" x2="226" y2="80"></line>
+    {
+      x.sheetRows.map((r, ri) => (
+        <g>
+          {r.map((v, ci) => (
+            <text class={ci === 2 ? 'val money' : 'val'} x={colX[ci]} y={rowY[ri]}>{v}</text>
+          ))}
+          <line class="rule" x1="34" y1={rowY[ri] + 12} x2="226" y2={rowY[ri] + 12} />
+        </g>
+      ))
+    }
+    <text class="more" x="130" y="200" text-anchor="middle">+ 39 MORE ROWS</text>
+  </g>
+
+  <!-- mapping lines -->
+  <g class="maps">
+    <path class="map m1" pathLength="1" d="M 238 94 C 276 94, 284 114, 322 114"></path>
+    <path class="map m2" pathLength="1" d="M 238 124 C 276 124, 284 162, 322 162"></path>
+    <path class="map m3" pathLength="1" d="M 238 154 C 276 154, 284 210, 322 210"></path>
+    <circle class="dot m1" cx="322" cy="114" r="2.5"></circle>
+    <circle class="dot m2" cx="322" cy="162" r="2.5"></circle>
+    <circle class="dot m3" cx="322" cy="210" r="2.5"></circle>
+  </g>
+
+  <!-- the loads it becomes -->
+  <g class="loads">
+    <text class="panel-hdr" x="338" y="30">NEW LOADS</text>
+    <rect class="card" x="322" y="42" width="216" height="214" rx="10"></rect>
+    {
+      x.fields.map((f, i) => (
+        <g>
+          <text class="lbl" x="338" y={fieldY[i]}>{f[0]}</text>
+          <text class={i === 2 ? `fval money v${i + 1}` : `fval v${i + 1}`} x="338" y={fieldY[i] + 20}>{f[1]}</text>
+        </g>
+      ))
+    }
+  </g>
+
+  <!-- the receipt -->
+  <g class="chip-done">
+    <rect x="145" y="290" width="270" height="36" rx="18"></rect>
+    <text x="280" y="313" text-anchor="middle">{x.result}</text>
+  </g>
+</svg>
+
+<style>
+  text {
+    font-family: var(--f-mono);
+    font-stretch: 87.5%;
+    letter-spacing: 0.06em;
+  }
+  .doc {
+    fill: none;
+    stroke: var(--muted-dark);
+    stroke-width: 1.3;
+  }
+  .file {
+    font-size: 10.5px;
+    fill: #cdd6e4;
+    letter-spacing: 0.03em;
+  }
+  .panel-hdr {
+    font-size: 9px;
+    fill: var(--muted-dark);
+    letter-spacing: 0.14em;
+  }
+  .card {
+    fill: rgba(245, 247, 250, 0.025);
+    stroke: var(--line-dark);
+  }
+  .hdr text {
+    font-size: 8.5px;
+    fill: var(--muted-dark);
+    letter-spacing: 0.12em;
+  }
+  .rule {
+    stroke: rgba(245, 247, 250, 0.05);
+  }
+  .rule.strong {
+    stroke: rgba(245, 247, 250, 0.12);
+  }
+  .val {
+    font-size: 10.5px;
+    fill: #cdd6e4;
+  }
+  .money {
+    fill: var(--amber);
+  }
+  .more {
+    font-size: 8.5px;
+    fill: var(--muted-dark);
+    letter-spacing: 0.12em;
+  }
+  .map {
+    fill: none;
+    stroke: var(--signal-tint);
+    stroke-width: 1.5;
+    opacity: 0.85;
+  }
+  .dot {
+    fill: var(--signal-tint);
+  }
+  .lbl {
+    font-size: 8px;
+    fill: var(--muted-dark);
+    letter-spacing: 0.14em;
+  }
+  .fval {
+    font-family: var(--f-body);
+    font-size: 12.5px;
+    letter-spacing: 0;
+    fill: var(--headlight);
+  }
+  .fval.money {
+    font-family: var(--f-mono);
+    font-size: 11.5px;
+    fill: var(--amber);
+  }
+  .chip-done rect {
+    fill: rgba(27, 91, 249, 0.14);
+    stroke: rgba(125, 162, 255, 0.45);
+  }
+  .chip-done text {
+    font-size: 10px;
+    font-weight: 600;
+    fill: var(--headlight);
+    letter-spacing: 0.1em;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .viz.play .sheet {
+      opacity: 0;
+      animation: vx-fade 380ms var(--ease-arrive) 0ms forwards;
+    }
+    .viz.play .loads {
+      opacity: 0;
+      animation: vx-fade 380ms var(--ease-arrive) 140ms forwards;
+    }
+    .viz.play .map {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: vx-draw 480ms var(--ease-arrive) forwards;
+    }
+    .viz.play .dot {
+      opacity: 0;
+      animation: vx-fade 200ms var(--ease-arrive) forwards;
+    }
+    .viz.play .m1 {
+      animation-delay: 520ms;
+    }
+    .viz.play .m2 {
+      animation-delay: 700ms;
+    }
+    .viz.play .m3 {
+      animation-delay: 880ms;
+    }
+    .viz.play circle.m1 {
+      animation-delay: 900ms;
+    }
+    .viz.play circle.m2 {
+      animation-delay: 1080ms;
+    }
+    .viz.play circle.m3 {
+      animation-delay: 1260ms;
+    }
+    .viz.play .fval {
+      opacity: 0;
+      transform: translateY(6px);
+      animation: vx-rise 340ms var(--ease-arrive) forwards;
+    }
+    .viz.play .v1 {
+      animation-delay: 940ms;
+    }
+    .viz.play .v2 {
+      animation-delay: 1120ms;
+    }
+    .viz.play .v3 {
+      animation-delay: 1300ms;
+    }
+    .viz.play .chip-done {
+      opacity: 0;
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: vx-stamp 420ms var(--ease-arrive) 1750ms forwards;
+    }
+    @keyframes vx-fade {
+      to {
+        opacity: 1;
+      }
+    }
+    @keyframes vx-draw {
+      from {
+        stroke-dashoffset: 1;
+      }
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+    @keyframes vx-rise {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes vx-stamp {
+      0% {
+        opacity: 0;
+        transform: scale(1.3);
+      }
+      62% {
+        opacity: 1;
+        transform: scale(0.97);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  }
+</style>

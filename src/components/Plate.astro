@@ -1,26 +1,31 @@
 ---
-// Figure plate: a real product screenshot presented like a manifest
-// figure — mono caption, hairline, no fake browser chrome.
-// Until captures exist, renders a marked slot with exact dimensions
-// so layout (and CLS) is final from day one.
+// Figure plate: a product figure presented like a manifest plate —
+// mono caption, hairline, no fake browser chrome. Renders, in order
+// of preference: a slotted vignette, a real screenshot (src), or a
+// dimension-true placeholder. Aspect is fixed so CLS stays zero.
 interface Props {
   n: string;
   caption: string;
-  slot: string;
+  slotId?: string;
   src?: string;
   width?: number;
   height?: number;
 }
-const { n, caption, slot: slotName, src, width = 1600, height = 1000 } = Astro.props;
+const { n, caption, slotId = '', src, width = 1600, height = 1000 } = Astro.props;
+const hasViz = Astro.slots.has('default');
 ---
 
 <figure class="plate reveal">
   {
-    src ? (
+    hasViz ? (
+      <div class="plate-viz">
+        <slot />
+      </div>
+    ) : src ? (
       <img src={src} alt={caption.toLowerCase()} width={width} height={height} loading="lazy" decoding="async" />
     ) : (
       <div class="plate-slot" role="img" aria-label={`Screenshot pending: ${caption.toLowerCase()}`}>
-        <span>SCREENSHOT SLOT · {slotName}</span>
+        <span>SCREENSHOT SLOT · {slotId}</span>
       </div>
     )
   }
@@ -33,7 +38,8 @@ const { n, caption, slot: slotName, src, width = 1600, height = 1000 } = Astro.p
     min-width: 0;
   }
   .plate img,
-  .plate-slot {
+  .plate-slot,
+  .plate-viz {
     width: 100%;
     aspect-ratio: 16 / 10;
     object-fit: cover;
@@ -41,6 +47,19 @@ const { n, caption, slot: slotName, src, width = 1600, height = 1000 } = Astro.p
     border-radius: var(--r-2);
     border: 1px solid var(--line-dark);
     background: var(--panel);
+    transition: border-color var(--t-reveal) var(--ease-arrive);
+  }
+  .plate:hover img,
+  .plate:hover .plate-viz {
+    border-color: rgba(125, 162, 255, 0.35);
+  }
+  .plate-viz {
+    overflow: hidden;
+  }
+  .plate-viz :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
   .plate-slot {
     display: flex;

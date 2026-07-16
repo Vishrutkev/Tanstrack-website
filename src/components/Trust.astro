@@ -57,12 +57,40 @@ import { TRUST, LOAD } from '../copy';
     letter-spacing: 0.01em;
   }
   .row {
+    position: relative;
     display: grid;
     grid-template-columns: 118px 168px minmax(0, 1fr) 158px 64px;
     gap: 18px;
     padding: 13px 2px;
     border-bottom: 1px solid var(--line-ink);
     align-items: baseline;
+    transition: background-color var(--t-hover) var(--ease-arrive);
+  }
+  .row:hover {
+    background-color: rgba(16, 19, 26, 0.04);
+  }
+  /* each entry lands with a brief amber pass — ink drying on the record */
+  @media (prefers-reduced-motion: no-preference) {
+    .row.in::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--amber);
+      opacity: 0;
+      pointer-events: none;
+      animation: ledger-flash 900ms var(--ease-arrive) calc(var(--reveal-delay, 0ms) + 180ms) both;
+    }
+    @keyframes ledger-flash {
+      0% {
+        opacity: 0;
+      }
+      30% {
+        opacity: 0.13;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
   }
   .t {
     color: var(--muted-ink);

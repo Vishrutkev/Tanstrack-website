@@ -1,21 +1,47 @@
 ---
 import Chip from './Chip.astro';
 import LaneMap from './LaneMap.astro';
-import { HERO, LOAD } from '../copy';
+import { HERO, LOAD, FACTS } from '../copy';
+const words = HERO.h1.split(' ');
 ---
 
-<header class="hero container">
-  <div class="hero-copy">
-    <Chip parts={LOAD.chips.dispatched} class="hero-chip" />
-    <h1>{HERO.h1}</h1>
-    <p class="hero-sub">{HERO.sub}</p>
-    <div class="hero-ctas">
-      <a href={HERO.ctaPrimary.href} class="btn btn-amber">{HERO.ctaPrimary.label}</a>
-      <a href={HERO.ctaSecondary.href} class="btn btn-ghost">{HERO.ctaSecondary.label}</a>
+<header class="hero-zone">
+  <div class="hero container">
+    <div class="hero-copy">
+      <Chip parts={LOAD.chips.dispatched} class="hero-chip" />
+      <h1 aria-label={HERO.h1}>
+        <span aria-hidden="true">
+          {words.map((w, i) => (
+            <Fragment>
+              {i > 0 && ' '}
+              <span class="hw" style={`--wi: ${i}`}>{w}</span>
+            </Fragment>
+          ))}
+        </span>
+      </h1>
+      <p class="hero-sub">{HERO.sub}</p>
+      <div class="hero-ctas">
+        <a href={HERO.ctaPrimary.href} class="btn btn-amber">{HERO.ctaPrimary.label}</a>
+        <a href={HERO.ctaSecondary.href} class="btn btn-ghost">{HERO.ctaSecondary.label}</a>
+      </div>
+    </div>
+    <div class="hero-map">
+      <LaneMap />
     </div>
   </div>
-  <div class="hero-map">
-    <LaneMap />
+
+  <!-- verified product facts — the manifest strip -->
+  <div class="facts-band reveal">
+    <div class="facts container" role="list" aria-label={FACTS.aria}>
+      {
+        FACTS.items.map((f) => (
+          <div class="fact" role="listitem">
+            <span class={f.count ? 'fact-n count' : 'fact-n'} data-n={f.count ? f.n : null}>{f.n}</span>
+            <span class="fact-label">{f.label}</span>
+          </div>
+        ))
+      }
+    </div>
   </div>
 </header>
 
@@ -32,6 +58,9 @@ import { HERO, LOAD } from '../copy';
     line-height: 1.02;
     margin-top: 22px;
   }
+  .hw {
+    display: inline-block;
+  }
   .hero-sub {
     margin-top: 20px;
     font-size: 18px;
@@ -47,6 +76,61 @@ import { HERO, LOAD } from '../copy';
     flex-wrap: wrap;
   }
 
+  /* a quiet pool of signal light behind the network */
+  .hero-map {
+    position: relative;
+    isolation: isolate;
+  }
+  .hero-map::before {
+    content: '';
+    position: absolute;
+    inset: -14% -20%;
+    z-index: -1;
+    background: radial-gradient(
+      closest-side,
+      rgba(27, 91, 249, 0.16),
+      rgba(27, 91, 249, 0.05) 55%,
+      transparent 78%
+    );
+    pointer-events: none;
+  }
+
+  .facts-band {
+    border-block: 1px solid var(--line-dark);
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px clamp(18px, 3vw, 40px);
+  }
+  .fact {
+    padding-block: 24px 26px;
+  }
+  .fact:not(:first-child) {
+    border-left: 1px solid var(--line-dark);
+    padding-left: clamp(16px, 2.4vw, 32px);
+  }
+  .fact-n {
+    display: block;
+    font-family: var(--f-display);
+    font-weight: 800;
+    font-size: clamp(26px, 3vw, 34px);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .fact-label {
+    display: block;
+    margin-top: 9px;
+    font-family: var(--f-mono);
+    font-stretch: 87.5%;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-dark);
+    max-width: 30ch;
+    text-wrap: pretty;
+  }
+
   @media (max-width: 900px) {
     .hero {
       grid-template-columns: 1fr;
@@ -54,6 +138,16 @@ import { HERO, LOAD } from '../copy';
     }
     .hero-map {
       max-width: 560px;
+    }
+    .facts {
+      grid-template-columns: 1fr 1fr;
+    }
+    .fact {
+      padding-block: 18px;
+    }
+    .fact:nth-child(odd) {
+      border-left: 0;
+      padding-left: 0;
     }
   }
   @media (max-width: 480px) {
@@ -66,25 +160,28 @@ import { HERO, LOAD } from '../copy';
     }
   }
 
-  /* the one orchestrated moment: chip stamps, thesis rises, map draws */
+  /* the one orchestrated moment: chip stamps, words land, map draws */
   @media (prefers-reduced-motion: no-preference) {
-    .hero-copy > :global(*) {
+    .hero-copy > :global(*:not(h1)) {
       opacity: 0;
       transform: translateY(18px);
       animation: rise var(--t-section) var(--ease-arrive) forwards;
     }
     .hero-copy > :global(.hero-chip) {
-      animation-delay: 0ms;
+      animation-name: stamp;
+      animation-delay: 40ms;
       animation-duration: var(--t-reveal);
     }
-    .hero-copy > h1 {
-      animation-delay: 90ms;
+    .hw {
+      opacity: 0;
+      transform: translateY(0.5em);
+      animation: rise 500ms var(--ease-arrive) calc(90ms + var(--wi) * 70ms) forwards;
     }
     .hero-copy > .hero-sub {
-      animation-delay: 190ms;
+      animation-delay: 260ms;
     }
     .hero-copy > .hero-ctas {
-      animation-delay: 280ms;
+      animation-delay: 360ms;
     }
     @keyframes rise {
       to {

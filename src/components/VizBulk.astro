@@ -1,0 +1,212 @@
+---
+// FIG. 03 — bulk edit, drawn from the product. On reveal: checkboxes
+// cascade down, the banner arms, then every pickup date flips in the
+// same instant — the all-or-nothing beat — and the Undo toast lands.
+import { VIZ } from '../copy';
+const b = VIZ.bulk;
+const TOP = 56;
+const ROW_H = 29;
+const rows = b.ids.map((id, i) => ({
+  id,
+  lane: b.lanes[i],
+  i,
+  y: TOP + i * ROW_H,
+}));
+---
+
+<svg
+  class="viz viz-bulk"
+  viewBox="0 0 560 350"
+  role="img"
+  aria-label="Bulk edit: two hundred loads selected, every pickup date moves one day in a single all-or-nothing transaction, with undo available."
+>
+  <!-- banner -->
+  <g class="banner">
+    <rect class="cb on" x="24" y="16" width="14" height="14" rx="4"></rect>
+    <path class="tick big" pathLength="1" d="M 27 23.5 l 3 3 l 5.5 -6"></path>
+    <text class="sel" x="50" y="28">{b.banner}</text>
+  </g>
+  <g class="pill">
+    <rect x="404" y="10" width="134" height="28" rx="8"></rect>
+    <text x="471" y="28" text-anchor="middle">{b.change}</text>
+  </g>
+  <line class="rule strong" x1="0" y1="48" x2="560" y2="48"></line>
+
+  <!-- rows -->
+  {
+    rows.map(({ id, lane, i, y }) => (
+      <g class="brow" style={`--bi: ${i}`}>
+        <rect class="cb row-cb" x="24" y={y + 6} width="12" height="12" rx="3" />
+        <path class="tick row-tick" pathLength="1" d={`M 26.5 ${y + 12.5} l 2.6 2.6 l 4.6 -5.2`} />
+        <text class="id" x="52" y={y + 19}>{id}</text>
+        <text class="lane" x="150" y={y + 19}>{lane}</text>
+        <g class="d-old">
+          <text class="date old" x="538" y={y + 19} text-anchor="end">{b.dateFrom}</text>
+        </g>
+        <g class="d-new">
+          <text class="date new" x="538" y={y + 19} text-anchor="end">{b.dateTo}</text>
+        </g>
+        <line class="rule" x1="0" y1={y + ROW_H} x2="560" y2={y + ROW_H} />
+      </g>
+    ))
+  }
+  <text class="more" x="24" y="318">{b.more}</text>
+
+  <!-- undo toast -->
+  <g class="toast">
+    <rect x="284" y="296" width="254" height="40" rx="10"></rect>
+    <text class="toast-msg" x="300" y="321">{b.toast[0]}</text>
+    <text class="toast-undo" x="522" y="321" text-anchor="end">{b.toast[1]}</text>
+  </g>
+</svg>
+
+<style>
+  text {
+    font-family: var(--f-mono);
+    font-stretch: 87.5%;
+    letter-spacing: 0.05em;
+  }
+  .rule {
+    stroke: rgba(245, 247, 250, 0.05);
+  }
+  .rule.strong {
+    stroke: rgba(245, 247, 250, 0.12);
+  }
+  .cb {
+    fill: var(--signal);
+    stroke: var(--signal);
+    stroke-width: 1.3;
+  }
+  .tick {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .sel {
+    font-size: 11.5px;
+    font-weight: 600;
+    fill: var(--headlight);
+    letter-spacing: 0.1em;
+  }
+  .pill rect {
+    fill: rgba(27, 91, 249, 0.12);
+    stroke: rgba(125, 162, 255, 0.5);
+  }
+  .pill text {
+    font-size: 9.5px;
+    font-weight: 600;
+    fill: var(--signal-tint);
+    letter-spacing: 0.1em;
+  }
+  .id {
+    font-size: 10.5px;
+    font-weight: 600;
+    fill: #cdd6e4;
+  }
+  .lane {
+    font-size: 9.5px;
+    fill: var(--muted-dark);
+  }
+  .date {
+    font-size: 10px;
+  }
+  .date.old {
+    fill: var(--muted-dark);
+  }
+  .date.new {
+    fill: var(--headlight);
+  }
+  .d-old {
+    opacity: 0;
+  }
+  .more {
+    font-size: 9px;
+    fill: var(--muted-dark);
+    letter-spacing: 0.12em;
+  }
+  .toast rect {
+    fill: #1d2842;
+    stroke: rgba(125, 162, 255, 0.28);
+  }
+  .toast-msg {
+    font-size: 9.5px;
+    fill: var(--headlight);
+    letter-spacing: 0.03em;
+  }
+  .toast-undo {
+    font-size: 10px;
+    font-weight: 600;
+    fill: var(--amber);
+    letter-spacing: 0.1em;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .viz.play .brow {
+      opacity: 0;
+      animation: vb-fade 300ms var(--ease-arrive) calc(var(--bi) * 40ms) forwards;
+    }
+    .viz.play .row-cb {
+      fill: transparent;
+      stroke: var(--muted-dark);
+      animation: vb-check 260ms var(--ease-arrive) calc(340ms + var(--bi) * 70ms) forwards;
+    }
+    .viz.play .row-tick {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: vb-tick 240ms var(--ease-arrive) calc(420ms + var(--bi) * 70ms) forwards;
+    }
+    .viz.play .banner {
+      opacity: 0;
+      animation: vb-fade 320ms var(--ease-arrive) 1050ms forwards;
+    }
+    .viz.play .pill {
+      opacity: 0;
+      transform: translateY(-6px);
+      animation: vb-rise 320ms var(--ease-arrive) 1200ms forwards;
+    }
+    /* the all-or-nothing beat: every date flips in the same instant */
+    .viz.play .d-old {
+      opacity: 1;
+      animation: vb-out 240ms var(--ease-arrive) 1750ms forwards;
+    }
+    .viz.play .d-new {
+      opacity: 0;
+      transform: translateY(6px);
+      animation: vb-rise 280ms var(--ease-arrive) 1800ms forwards;
+    }
+    .viz.play .toast {
+      opacity: 0;
+      transform: translateY(14px);
+      animation: vb-rise 380ms var(--ease-arrive) 2300ms forwards;
+    }
+    @keyframes vb-fade {
+      to {
+        opacity: 1;
+      }
+    }
+    @keyframes vb-out {
+      to {
+        opacity: 0;
+      }
+    }
+    @keyframes vb-rise {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes vb-check {
+      to {
+        fill: var(--signal);
+        stroke: var(--signal);
+      }
+    }
+    @keyframes vb-tick {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+  }
+</style>

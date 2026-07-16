@@ -40,13 +40,18 @@ stamping, per-load P&L, tenant isolation, RBAC, AWS ca-central-1).
 Known **not** to exist as of 2026-07: PDF rate-con import, real-time sync,
 emailed tenders, per-load document storage — don't claim them until built.
 
-## Screenshots
+## Product figures
 
-Product figures are marked slots (`SCREENSHOT SLOT · …`) until real captures
-exist. To fill one: capture from the app with **seeded fictional data**
-(never real client names), save under `src/assets/`, and pass
-`src`/`width`/`height` to the `<Plate>` in `src/components/Transit.astro`.
-Slots are 16:10.
+The three figures in section 02 are **animated SVG vignettes** drawn from
+the product (`VizGrid` / `VizImport` / `VizBulk` in `src/components/`),
+played on scroll-arrival and resting at their final frame. Layout is true,
+data is illustrative — all names fictional (see `VIZ` in `src/copy.ts`;
+never real client names). A note under the figures says exactly that.
+
+To swap one for a real capture later: screenshot the app with **seeded
+fictional data**, save under `src/assets/`, remove the vignette child and
+pass `src`/`width`/`height` to that `<Plate>` in
+`src/components/Transit.astro`. Plates are 16:10.
 
 ## Design system (short version)
 

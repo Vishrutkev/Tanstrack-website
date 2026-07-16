@@ -112,6 +112,53 @@ const jsonLd = {
           { rootMargin: '0px 0px -55% 0px' }
         );
         stops.forEach((s) => spine.observe(s));
+
+        // Product vignettes: play on arrival, rewind once fully
+        // off-screen so scrolling back replays the scene.
+        const vizes = document.querySelectorAll('.viz');
+        if (vizes.length) {
+          const vio = new IntersectionObserver(
+            (entries) => {
+              for (const e of entries) {
+                if (e.intersectionRatio >= 0.45) e.target.classList.add('play');
+                else if (!e.isIntersecting) e.target.classList.remove('play');
+              }
+            },
+            { threshold: [0, 0.45] }
+          );
+          vizes.forEach((v) => vio.observe(v));
+        }
+
+        // Facts strip: markup ships the final value; motion counts up to it.
+        const counts = document.querySelectorAll('.count');
+        if (counts.length) {
+          const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+          const run = (el: Element) => {
+            const end = el.getAttribute('data-n') || '';
+            const num = parseInt(end, 10);
+            if (!Number.isFinite(num)) return;
+            const suffix = end.replace(String(num), '');
+            const t0 = performance.now();
+            const tick = (now: number) => {
+              const p = Math.min(1, (now - t0) / 950);
+              el.textContent = Math.round(ease(p) * num) + suffix;
+              if (p < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+          };
+          const cio = new IntersectionObserver(
+            (entries) => {
+              for (const e of entries) {
+                if (e.isIntersecting) {
+                  run(e.target);
+                  cio.unobserve(e.target);
+                }
+              }
+            },
+            { threshold: 0.6 }
+          );
+          counts.forEach((c) => cio.observe(c));
+        }
       } else {
         reveals.forEach((el) => el.classList.add('in'));
         stops.forEach((s) => s.classList.add('passed'));
